@@ -1,27 +1,33 @@
 
 #-------------- Declaracion de variables --------------
-.data
+.data 
 saltoLinea: .asciiz "\n"
 zero: .float 0.0
-var_0: .word 8
-var_1: .word 2
-var_2: .word 1
+uno: .float 1.0
+resultado: .space 100
+var_0: .float 5.000
+var_2: .float 5.000
+var_4: .float 234.000
+var_6: .float 5.000
+var_8: .float 13.000
+var_11: .float 8.000
 
 #--------------------- Ejecuciones ---------------------
 .text
 lwc1 $f31, zero
-lw $t0, var_0     # Cargar var_0 en $t0
-lw $t2, var_1     # Cargar var_1 en $t2
-etiqueta_0:
-slt $t5, $t2, $t0      # Comparar si $t2 < $t0, almacenar resultado en $t5
-beqz $t5, etiqueta_1    # Si $t5 es 0, saltar a etiqueta de fin
-li $v0, 1
-move $a0, $t2
-syscall     # Llamada al sistema
+lwc1 $f0, var_0
+lwc1 $f8, var_8
+li $v0, 2
+add.s $f12, $f31, $f8
+mov.s $f30, $f12  #Movemos el registro 12 al 30 iniciado a false
+syscall #Llamada al sistema
 li $v0, 4
 la $a0, saltoLinea
 syscall #Llamada al sistema
-lw $t7, var_2     # Cargar var_2 en $t7
-add $t8, $t2, $t7    # Sumar $t2 y $t7, guardar en $t8
-j etiqueta_0
-etiqueta_1:
+li $v0, 2
+add.s $f12, $f31, $f0
+mov.s $f30, $f12  #Movemos el registro 12 al 30 iniciado a false
+syscall #Llamada al sistema
+li $v0, 4
+la $a0, saltoLinea
+syscall #Llamada al sistema

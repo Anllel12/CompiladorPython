@@ -1,95 +1,57 @@
-%{
-#include <stdio.h>
-#include "gramatica_python.tab.h"
-
-int n_linea = 1; // Variable para contar el número de línea
-%}
 
 %option noyywrap
 
-digit           [0-9]
-letter          [a-zA-Z]
-id              {letter}({letter}|{digit})*
+%{
+#include "gramatica_python.tab.h"
+extern YYSTYPE yylval;
+int n_linea = 1; 
+%}
 
 %%
 
-False 		{return FALSE; }
-None 		{return NONE; }
-True 		{return TRUE; }
-and 		{return AND; }
-as 			{return AS; }
-assert 		{return ASSERT; }
-async 		{return ASYNC; }
-await 		{return AWAIT; }
-break 		{return BREAK; }
-class 		{return CLASS; }
-continue 	{return CONTINUE; }
-def 		{return DEF; }
-del 		{return DEL; }
-elif 		{return ELIF; }
-else 		{return ELSE; }
-except 		{return EXCEPT; }
-finally 	{return FINALLY; }
-for 		{return FOR; }
-from 		{return FROM; }
-global 		{return GLOBAL; }
-if 			{return IF; }
-import 		{return IMPORT; }
-in 			{return IN; }
-is 			{return IS; }
-lambda 		{return LAMBDA; }
-nonlocal 	{return NONLOCAL; }
-not 		{return NOT; }
-or 			{return OR; }
-pass 		{return PASS; }
-raise 		{return RAISE; }
-return 		{return RETURN; }
-try 		{return TRY; }
-while 		{return WHILE; }
-with 		{return WITH; }
-yield 		{return YIELD; }
-end 		{return END; }
-print 		{return IMPRIMIR; }
+"and"                     {return AND; }                     
+"or"                      {return OR; }                      
+"while"                   {return WHILE; }     
+"endWhile"                {return END_WHILE; }                    
+"for"                     {return FOR; }  
+"endFor"                  {return END_FOR; }
+"in"                      {return IN; }                  
+"range"                   {return RANGE; }                     
+"if"                      {return IF; }
+"elif"                    {return ELIF; }       
+"else"                    {return ELSE; }              
+"endIf"                   {return END_IF; }     
 
-str 		{return CADENA; }
-bytes 		{return VECTOR; }
-list 		{return LISTA; }
-tuple 		{return TUPLA; }
-set 		{return SET; }
-dict 		{return DICT; }
-int 		{return INT; }
-float 		{return FLOAT; }
-complex		{return COMPLEX; }
-bool 		{return BOOLEAN; }
+","                       {return COMA; }                   
+"+"	                      {return SUMA; }          
+"-"	                      {return RESTA; }                    
+"*"                       {return MULTIPLICACION; }    
+"/"                       {return DIVISION; }               
+"("	                      {return PARENTESIS_IZQ; } 
+")"	                      {return PARENTESIS_DER; } 
+"["	                      {return CORCHETE_IZQ; }    
+"]"	                      {return CORCHETE_DER; }      
+">"                       {return MAYOR_QUE; }      
+">="                      {return MAYOR_IGUAL_QUE; }
+"<"                       {return MENOR_QUE; }      
+"<="                      {return MENOR_IGUAL_QUE; }                  
+"=="	                  {return IGUAL_QUE; }               
+"!="	                  {return DISTINTO_QUE; }  
+"="	                      {return ASIGNACION; }
+":"                       {return DOS_PUNTOS; }             
 
-"+"         {return SUMA; }
-"-"         {return RESTA; }
-"*"         {return MULTIPLICACION; }
-"/"         {return DIVISION; }
-"%"			{return MODULO; }
-"<"         {return MENOR_QUE; }
-"<="        {return MENOR_IGUAL_QUE; }
-">"         {return MAYOR_QUE; }
-">="        {return MAYOR_IGUAL_QUE; }
-"+="        {return AUMENTAR_VALOR; }
-"=="        {return IGUAL_QUE; }
-"!="        {return DISTINTO_QUE; }
-"="         {return ASIGNACION; }
-"("         {return PARENTESIS_IZQ; }
-")"         {return PARENTESIS_DER; }
-":"         {return DOS_PUNTOS; }
+"#"(.)*                                         
+\"\"\"([^\"]|\"[^\"])*\"\"\"                    { int num_newlines = 0; char *p; for (p = yytext; *p; p++) { if (*p == '\n') { num_newlines++; } } int old_number = n_linea; n_linea += num_newlines; }
+\"[^\"\n]*\"                                    {yylval.stringVal = strdup(yytext + 1); yylval.stringVal[strlen(yylval.stringVal) - 1] = '\0'; printf(yytext);return CADENA;}
 
-{digit}+                   { yylval.intVal = atoi(yytext); return NUMERO; }  
-{digit}+"."{digit}*        { yylval.realVal = atof(yytext); return DECIMAL; } 
-{id}(_{id})*               { yylval.strVal = strdup(yytext); return VARIABLE; }
-\"([^\\"]|\\.)*\"          { yylval.strVal = strdup(yytext); return STRING; } 
+print                                           return IMPRIMIR;
+[0-9]+                                          {yylval.enteroVal = atoi(yytext); return NUMERICO;}
+[0-9]+.[0-9]+                                   {yylval.realVal   = atof(yytext); return NUMERICODECIMAL;}
+_?[a-zA-Z0-9_]+		                            {yylval.stringVal = strdup(yytext); return IDENTIFICADOR;}
+                                        
 
-\[[[:alnum:]]*\]     							{ /* return ARRAY_SIMPLE; */ }
-\[[[:alnum:]]*\]\[[[:alnum:]]*\]      			{ /* return ARRAY_2D; */}
-#.*[^\n]+										{ /* ignorar comentario una linea */ }
-"/*"([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+"/" 	{ /* ignorar comentario varias lineas */ }
-[ \t]											{ /* ignorar tabulaciones */ }
+\n                                              { printf("\n--------------- Numero de linea %d ----------------\n\n", n_linea); n_linea++;}
+[ \t]                                           { /* no se hace nada */ }
 
-\n              { n_linea++; }
 
 %%

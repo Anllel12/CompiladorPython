@@ -1,0 +1,11 @@
+suma = 5
+
+if (suma != 5):
+print(234)
+elif (suma == 5):
+print(13)
+else:
+print(8)
+finIf
+
+print(suma)
