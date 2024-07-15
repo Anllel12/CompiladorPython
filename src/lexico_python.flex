@@ -45,9 +45,9 @@ int n_linea = 1;
 \"[^\"\n]*\"                                    {yylval.stringVal = strdup(yytext + 1); yylval.stringVal[strlen(yylval.stringVal) - 1] = '\0'; printf(yytext);return CADENA;}
 
 print                                           return IMPRIMIR;
-[0-9]+                                          {yylval.enteroVal = atoi(yytext); return NUMERICO;}
-[0-9]+.[0-9]+                                   {yylval.realVal   = atof(yytext); return NUMERICODECIMAL;}
-_?[a-zA-Z0-9_]+		                            {yylval.stringVal = strdup(yytext); return IDENTIFICADOR;}
+[0-9]+                                          {yylval.enteroVal = atoi(yytext); return NUMERO;}
+[0-9]+.[0-9]+                                   {yylval.realVal   = atof(yytext); return DECIMAL;}
+_?[a-zA-Z0-9_]+		                            {yylval.stringVal = strdup(yytext); return VARIABLE;}
                                         
 
 \n                                              { printf("\n--------------- Numero de linea %d ----------------\n\n", n_linea); n_linea++;}
